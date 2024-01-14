@@ -1,0 +1,8 @@
+{
+  "name": "h2v.audio-manager",
+  "version": "1.0.0",
+  "displayName": "Audio Manager",
+  "description": "Audio manager play audio using scriptable object event",
+  "unity": "2022.3",
+  "unityRelease": "0f1"
+}
