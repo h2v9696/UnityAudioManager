@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b35a7bac046ea544aa172bde1e5733a, type: 3}
+  m_Name: AudioSetting
+  m_EditorClassIdentifier: 
+  _audioMixer: {fileID: 24100000, guid: 47cedd9204c39a449af7571e0b689cdb, type: 2}
+  _audioMixerGroupSettings:
+  - <MixerGroup>k__BackingField: {fileID: 24300002, guid: 47cedd9204c39a449af7571e0b689cdb, type: 2}
+    <ExposedVolumeName>k__BackingField: MasterVolume
+    _volume: 0
+    _isMuted: 0
+  - <MixerGroup>k__BackingField: {fileID: 7629525543686191856, guid: 47cedd9204c39a449af7571e0b689cdb, type: 2}
+    <ExposedVolumeName>k__BackingField: BGMVolume
+    _volume: 0
+    _isMuted: 0
+  - <MixerGroup>k__BackingField: {fileID: -5613337981478384265, guid: 47cedd9204c39a449af7571e0b689cdb, type: 2}
+    <ExposedVolumeName>k__BackingField: SFXVolume
+    _volume: 0
+    _isMuted: 0
+  _defaultVolume: 0

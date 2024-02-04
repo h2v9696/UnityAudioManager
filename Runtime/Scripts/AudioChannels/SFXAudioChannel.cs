@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cysharp.Threading.Tasks;
 using H2V.AudioManager.ScriptableObjects;
 using H2V.AudioManager.ScriptableObjects.Events;
@@ -50,7 +49,7 @@ namespace H2V.AudioManager.AudioChannels
         private async UniTask<AudioEmitter> InternalPlay(SFXAudioCueSO audioCue)
         {
             var audioClipSelector = audioCue.CreateAudioSelector();
-            AudioClip audioClip = null;
+            AudioClip audioClip;
             var audioEmitter = GetAudioEmitter();
             _audioEmitters.Add(audioEmitter);
 

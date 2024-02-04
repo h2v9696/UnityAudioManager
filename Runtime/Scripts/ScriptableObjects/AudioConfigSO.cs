@@ -5,6 +5,9 @@ using UnityEngine.Audio;
 
 namespace H2V.AudioManager.ScriptableObjects
 {
+    /// <summary>
+    /// Config how a single file audio clip plays.
+    /// </summary>
     [CreateAssetMenu(fileName = "AudioConfig", menuName = "H2V/Audio Manager/Audio Config")]
     public class AudioConfigSO : ScriptableObject
     {

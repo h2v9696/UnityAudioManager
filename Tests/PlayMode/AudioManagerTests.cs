@@ -15,28 +15,10 @@ namespace H2V.AudioManager.Tests
     [TestFixture, Category("Integration Tests")]
     public class AudioManagerTests
     {
-        private const string ASSET_FOLDER_PATH = "Packages/h2v.audio-manager";
-        private const string PLAY_BGM_EVENT = "PlayBGMAudioCueEvent";
-        private const string PLAY_SFX_EVENT = "PlaySFXAudioCueEvent";
-        private const string STOP_BGM_EVENT = "StopBGMEvent";
-        private const string STOP_SFX_EVENT = "StopSFXEvent";
-        private const string BGM_AUDIO_CONFIG = "BGMAudioConfig";
-        private const string FADE_BGM_AUDIO_CONFIG = "FadeBGMAudioConfig";
-        private const string SFX_AUDIO_CONFIG = "SFXAudioConfig";
-
-        private const string TEST_BGM_GUID = "950089bf58994a043a61e2060b1cb28b";
-        private const string TEST_LONG_BGM_GUID = "2e153112fce38474fad339dc94db8d7b";
-        private const string TEST_SFX_GUID = "6d8086b3fec929146bc7cadd7b215bbe";
-        private const string TEST_SFX2_GUID = "bc8b14fe934502843ae79651d680841d";
-        private const string TEST_GROUP = "TestGroup";
-
-        private const string AUDIO_MANAGER_PREFAB = "AudioManager";
-
         private AudioCueEventChannelSO _playBGMEventChannel;
         private SFXAudioCueEventChannelSO _playSFXEventChannel;
         private VoidEventChannelSO _stopBGMEventChannel;
         private VoidEventChannelSO _stopSFXEventChannel;
-
         private AudioCueSO _bgmCue;
         private AudioCueSO _longBgmCue;
         private SFXAudioCueSO _sfxCue;
@@ -46,37 +28,38 @@ namespace H2V.AudioManager.Tests
         private AudioConfigSO _sfxAudioConfig;
         private AudioManager _audioManager;
 
+        private string _assetFolderPath = AudioTestHelper.ASSET_FOLDER_PATH;
 
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
             _playBGMEventChannel = AssetFinder.FindAssetWithNameInPath<AudioCueEventChannelSO>(
-                PLAY_BGM_EVENT, ASSET_FOLDER_PATH);
+                AudioTestHelper.PLAY_BGM_EVENT, _assetFolderPath);
             _playSFXEventChannel = AssetFinder.FindAssetWithNameInPath<SFXAudioCueEventChannelSO>(
-                PLAY_SFX_EVENT, ASSET_FOLDER_PATH);
+                AudioTestHelper.PLAY_SFX_EVENT, _assetFolderPath);
             _stopBGMEventChannel = AssetFinder.FindAssetWithNameInPath<VoidEventChannelSO>(
-                STOP_BGM_EVENT, ASSET_FOLDER_PATH);
+                AudioTestHelper.STOP_BGM_EVENT, _assetFolderPath);
             _stopSFXEventChannel = AssetFinder.FindAssetWithNameInPath<VoidEventChannelSO>(
-                STOP_SFX_EVENT, ASSET_FOLDER_PATH);
+                AudioTestHelper.STOP_SFX_EVENT, _assetFolderPath);
             _bgmAudioConfig = AssetFinder.FindAssetWithNameInPath<AudioConfigSO>(
-                BGM_AUDIO_CONFIG, ASSET_FOLDER_PATH);
+                AudioTestHelper.BGM_AUDIO_CONFIG, _assetFolderPath);
             _fadeBgmAudioConfig = AssetFinder.FindAssetWithNameInPath<AudioConfigSO>(
-                FADE_BGM_AUDIO_CONFIG, ASSET_FOLDER_PATH);
+                AudioTestHelper.FADE_BGM_AUDIO_CONFIG, _assetFolderPath);
             _sfxAudioConfig = AssetFinder.FindAssetWithNameInPath<AudioConfigSO>(
-                SFX_AUDIO_CONFIG, ASSET_FOLDER_PATH);
+                AudioTestHelper.SFX_AUDIO_CONFIG, _assetFolderPath);
 
-            var bgmAssetRef = CreateAudioAssetReference(TEST_BGM_GUID);
-            var longBgmAssetRef = CreateAudioAssetReference(TEST_LONG_BGM_GUID);
-            var sfxAssetRef = CreateAudioAssetReference(TEST_SFX_GUID);
-            var sfx2AssetRef = CreateAudioAssetReference(TEST_SFX2_GUID);
+            var bgmAssetRef = AudioTestHelper.CreateAudioAssetReference(AudioTestHelper.TEST_BGM_GUID);
+            var longBgmAssetRef = AudioTestHelper.CreateAudioAssetReference(AudioTestHelper.TEST_LONG_BGM_GUID);
+            var sfxAssetRef = AudioTestHelper.CreateAudioAssetReference(AudioTestHelper.TEST_SFX_GUID);
+            var sfx2AssetRef = AudioTestHelper.CreateAudioAssetReference(AudioTestHelper.TEST_SFX2_GUID);
 
-            _bgmCue = CreateAudioCue<AudioCueSO>(_bgmAudioConfig, bgmAssetRef);
-            _longBgmCue = CreateAudioCue<AudioCueSO>(_fadeBgmAudioConfig, longBgmAssetRef);
-            _sfxCue = CreateAudioCue<SFXAudioCueSO>(_sfxAudioConfig, sfxAssetRef);
-            _multipleSfxCue = CreateAudioCue<SFXAudioCueSO>(_sfxAudioConfig, sfxAssetRef, sfx2AssetRef);
+            _bgmCue = AudioTestHelper.CreateAudioCue<AudioCueSO>(_bgmAudioConfig, bgmAssetRef);
+            _longBgmCue = AudioTestHelper.CreateAudioCue<AudioCueSO>(_fadeBgmAudioConfig, longBgmAssetRef);
+            _sfxCue = AudioTestHelper.CreateAudioCue<SFXAudioCueSO>(_sfxAudioConfig, sfxAssetRef);
+            _multipleSfxCue = AudioTestHelper.CreateAudioCue<SFXAudioCueSO>(_sfxAudioConfig, sfxAssetRef, sfx2AssetRef);
 
             var audioManager = AssetFinder.FindAssetWithNameInPath<GameObject>(
-                AUDIO_MANAGER_PREFAB, ASSET_FOLDER_PATH);
+                AudioTestHelper.AUDIO_MANAGER_PREFAB, _assetFolderPath);
             _audioManager = GameObject.Instantiate(audioManager).GetComponent<AudioManager>();
         }
 
@@ -84,22 +67,6 @@ namespace H2V.AudioManager.Tests
         public void Setup()
         {
             _audioManager.gameObject.SetActive(true);
-        }
-
-        private AudioAssetReference CreateAudioAssetReference(string guid)
-        {
-            var assetRef = new AudioAssetReference(guid);
-            AddressableExtensions.SetObjectToAddressableGroup(guid, TEST_GROUP);
-            return assetRef;
-        }
-
-        private T CreateAudioCue<T>(AudioConfigSO audioConfig, params AudioAssetReference[] assetRefs)
-            where T : AudioCueSO
-        {
-            var audioCue = ScriptableObject.CreateInstance<T>();
-            audioCue.SetPrivateArrayProperty("_audioClips", assetRefs);
-            audioCue.SetPrivateProperty("AudioConfigSO", audioConfig, true);
-            return audioCue;
         }
 
         [UnityTest]
@@ -230,7 +197,7 @@ namespace H2V.AudioManager.Tests
         public void OneTimeTearDown()
         {
             var settings = AddressableAssetSettingsDefaultObject.Settings;
-            settings.RemoveGroup(settings.FindGroup(TEST_GROUP));
+            settings.RemoveGroup(settings.FindGroup(AudioTestHelper.TEST_GROUP));
 
             Object.Destroy(_bgmCue);
             Object.Destroy(_sfxCue);
