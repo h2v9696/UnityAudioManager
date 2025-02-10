@@ -22,8 +22,6 @@ namespace H2V.AudioManager.ScriptableObjects
         [SerializeField] private AudioMixerGroupSetting[] _audioMixerGroupSettings;
         public AudioMixerGroupSetting[] AudioMixerGroupSettings => _audioMixerGroupSettings;
 
-        [SerializeField] private float _defaultVolume = 0.5f;
-
         public Dictionary<AudioMixerGroup, AudioMixerGroupSetting> GroupMapping
             { get; private set; } = new();
 
@@ -34,8 +32,6 @@ namespace H2V.AudioManager.ScriptableObjects
             {
                 GroupMapping.Add(setting.MixerGroup, setting);
             }
-
-            SetMixerGroupVolume();
         }
 
         public void SetVolume(AudioMixerGroup group, float volume)
@@ -52,23 +48,10 @@ namespace H2V.AudioManager.ScriptableObjects
             setting.IsMuted = isMute;
         }
 
-        private void SetMixerGroupVolume()
-        {
-            foreach (var setting in _audioMixerGroupSettings)
-            {
-                setting.Volume = _defaultVolume;
-            }
-        }
-
 # if UNITY_EDITOR
         private void OnValidate()
         {
-            if (_audioMixerGroupSettings.Length > 0)
-            {
-                SetMixerGroupVolume();
-                return;
-            }
-
+            if (_audioMixerGroupSettings.Length != 0) return;
             FindAndAddAllGroups();
             OnEnable();
         }
@@ -116,18 +99,20 @@ namespace H2V.AudioManager.ScriptableObjects
     [Serializable]
     public class AudioMixerGroupSetting
     {
-        private static float VolumeStep = 20f;
-        private static float MinVolume = 0.0001f;
+        private static readonly float VolumeStep = 20f;
+        private static readonly float MinVolume = 0.0001f;
 
         [field: SerializeField, ReadOnly] public AudioMixerGroup MixerGroup { get; private set; }
         [field: SerializeField, ReadOnly] public string ExposedVolumeName { get; private set; }
 
         [Range(0f, 1f)]
         [SerializeField] private float _volume = 0.5f;
+        [Range(0f, 1f)]
+        [SerializeField] private float _defaultVolume = 0.5f;
         [SerializeField] private bool _isMuted = false;
 
+
         public AudioMixer AudioMixer => MixerGroup.audioMixer;
-        private float _beforeMutedVolume;
 
         public float Volume
         {
@@ -146,9 +131,7 @@ namespace H2V.AudioManager.ScriptableObjects
             set
             {
                 _isMuted = value;
-                if (_isMuted) 
-                    _beforeMutedVolume = Volume;
-                Volume = _isMuted ? 0 : _beforeMutedVolume;
+                Volume = _isMuted ? 0 : _defaultVolume;
             }
         }
 
