@@ -15,7 +15,6 @@ namespace H2V.AudioManager.AudioChannels
         [SerializeField] private SFXAudioCueEventChannelSO _playSFXAudioCueEvent;
         [SerializeField] private VoidEventChannelSO _stopAudioEvent;
 
-        private List<AudioAssetReference> _audioAssetReferences = new();
         private List<AudioEmitter> _audioEmitters = new();
         private bool _isStopped = false;
 
@@ -32,7 +31,6 @@ namespace H2V.AudioManager.AudioChannels
             base.Disable();
             _playSFXAudioCueEvent.EventRaised -= Play;
             _stopAudioEvent.EventRaised -= Stop;
-            ReleaseAudioAssetReferences();
         }
 
         private async UniTask<AudioEmitter> Play(SFXAudioCueSO audioCue)
@@ -68,7 +66,7 @@ namespace H2V.AudioManager.AudioChannels
             while (audioClip != null);
 
             _audioEmitters.Remove(audioEmitter);
-            ReleaseAudioAssetReferences();
+            _audioManager.AudioEmitterPool.ReleaseItem(audioEmitter);
             _isStopped = false;
             return audioEmitter;
         }
@@ -77,7 +75,6 @@ namespace H2V.AudioManager.AudioChannels
         {
             var audioRef = audioClipSelector.GetAudioClipRef();
             if (audioRef == null) return null;
-            _audioAssetReferences.Add(audioRef);
             return await audioRef.TryLoadAsset();
         }
 
@@ -87,17 +84,9 @@ namespace H2V.AudioManager.AudioChannels
             foreach (var audioEmitter in _audioEmitters)
             {
                 _ = audioEmitter.Stop();
+                _audioManager.AudioEmitterPool.ReleaseItem(audioEmitter);
             }
             _audioEmitters.Clear();
-        }
-
-        private void ReleaseAudioAssetReferences()
-        {
-            foreach (var audioAssetReference in _audioAssetReferences)
-            {
-                audioAssetReference.ReleaseAsset();
-            }
-            _audioAssetReferences.Clear();
         }
     }
 }
